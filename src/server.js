@@ -5,7 +5,8 @@ import { env } from './utils/env.js';
 import { ENV_VARS } from './constants/index.js';
 import { errorHandlerMiddleware } from './middlewares/errorHandlerMiddleware.js';
 import { notFoundMiddleware } from './middlewares/notFoundMiddleware.js';
-import { getAllContacts, getContactById } from './services/contacts.js';
+
+import contactsRouter from './routers/contacts.js';
 
 export const setupServer = () => {
   const app = express();
@@ -20,33 +21,14 @@ export const setupServer = () => {
 
   app.use(cors());
 
-  app.get('/contacts', async (req, res) => {
-    const contacts = await getAllContacts();
-    res.json({
-      status: 200,
-      message: 'Successfully get contacts!',
-      data: contacts,
-    });
-  });
+  app.use(
+    express.json({
+      limit: '1mb',
+      type: ['application/json', 'application/vnd.api+json'],
+    }),
+  );
 
-  app.get('/contacts/:contactId', async (req, res) => {
-    const id = req.params.contactId;
-    console.log(id);
-    const contact = await getContactById(id);
-
-    if (!contact) {
-      return res.status(404).json({
-        status: 404,
-        message: `Not found`,
-      });
-    }
-
-    res.json({
-      status: 200,
-      message: `Successfully found contact with id ${id}!`,
-      data: contact,
-    });
-  });
+  app.use(contactsRouter);
 
   app.use(notFoundMiddleware);
 
