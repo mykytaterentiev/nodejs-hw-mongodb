@@ -7,6 +7,7 @@ export const errorHandlerMiddleware = (error, _req, res, _next) => {
     return res.status(error.status).json({
       status: error.status,
       message: error.message,
+      data: error.data
     });
   }
 
