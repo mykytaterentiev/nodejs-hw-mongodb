@@ -1,13 +1,12 @@
 import { HttpError } from 'http-errors';
 import { MongooseError } from 'mongoose';
 
-// eslint-disable-next-line no-unused-vars
-export const errorHandlerMiddleware = (error, _req, res, _next) => {
+export const errorHandlerMiddleware = (error, _req, res) => {
   if (error instanceof HttpError) {
     return res.status(error.status).json({
       status: error.status,
       message: error.message,
-      data: error.data
+      errors: error.data?.errors || [],  // Ensure the errors are included in the response
     });
   }
 
