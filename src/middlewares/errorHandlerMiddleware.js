@@ -1,12 +1,14 @@
 import { HttpError } from 'http-errors';
 import { MongooseError } from 'mongoose';
 
-export const errorHandlerMiddleware = (error, _req, res) => {
+export const errorHandlerMiddleware = (error, _req, res, next) => {
+  res.setHeader('Content-Type', 'application/json');
+
   if (error instanceof HttpError) {
     return res.status(error.status).json({
       status: error.status,
       message: error.message,
-      errors: error.data?.errors || [],  // Ensure the errors are included in the response
+      data: error.errors || null,
     });
   }
 
@@ -27,4 +29,6 @@ export const errorHandlerMiddleware = (error, _req, res) => {
       message: error.message,
     },
   });
+
+  next();
 };
